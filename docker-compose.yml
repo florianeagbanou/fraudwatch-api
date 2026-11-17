@@ -1,0 +1,34 @@
+# Starts the API with a real PostgreSQL database:  docker compose up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: fraudwatch
+      POSTGRES_USER: fraudwatch
+      POSTGRES_PASSWORD: fraudwatch
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fraudwatch"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_URL: jdbc:postgresql://db:5432/fraudwatch
+      DB_USER: fraudwatch
+      DB_PASSWORD: fraudwatch
+      # Demo value. In a real deployment this comes from a secret manager.
+      JWT_SECRET: change-this-secret-in-production-at-least-32-chars
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

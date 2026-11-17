@@ -1,0 +1,56 @@
+# On every push and pull request: compile, run all tests, build the Docker image.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Build and test
+        run: mvn -B verify
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: target/site/jacoco
+      - name: Build Docker image
+        run: docker build -t fraudwatch-api .
+
+  sql:
+    # Checks the schema and the SQL reports against a real PostgreSQL
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fraudwatch
+          POSTGRES_PASSWORD: fraudwatch
+          POSTGRES_DB: fraudwatch
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fraudwatch"
+          --health-interval 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: fraudwatch
+      PGPASSWORD: fraudwatch
+      PGDATABASE: fraudwatch
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./sql/check.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sql-report
+          path: sql-report.txt

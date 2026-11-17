@@ -1,0 +1,6 @@
+# Activated with SPRING_PROFILES_ACTIVE=postgres (see docker-compose.yml)
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/fraudwatch}
+    username: ${DB_USER:fraudwatch}
+    password: ${DB_PASSWORD:fraudwatch}

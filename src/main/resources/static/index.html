@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FraudWatch</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <h1>🛡️ FraudWatch</h1>
+  <div id="session" hidden>
+    <span id="session-user" data-testid="session-user"></span>
+    <button id="logout" type="button" class="secondary">Log out</button>
+  </div>
+</header>
+
+<main>
+  <p id="message" role="alert" data-testid="message" hidden></p>
+
+  <!-- Login / sign-up -->
+  <section id="auth-view" class="card narrow">
+    <h2>Sign in</h2>
+    <form id="auth-form" novalidate>
+      <label>Username <input id="username" name="username" autocomplete="username" required></label>
+      <label>Password <input id="password" name="password" type="password" autocomplete="current-password" required></label>
+      <div class="row">
+        <button type="submit" id="login-btn">Log in</button>
+        <button type="button" id="register-btn" class="secondary">Create account</button>
+      </div>
+    </form>
+    <p class="hint">Demo analyst: <code>analyst</code> / <code>Analyst123!</code> · API docs: <a href="/swagger-ui.html">Swagger UI</a></p>
+  </section>
+
+  <!-- Customer view -->
+  <section id="customer-view" hidden>
+    <div class="grid">
+      <div class="card">
+        <h2>My accounts</h2>
+        <form id="account-form" class="row">
+          <label>Home country
+            <select id="home-country">
+              <option value="CA">Canada</option>
+              <option value="US">United States</option>
+              <option value="FR">France</option>
+            </select>
+          </label>
+          <button type="submit" id="open-account-btn">Open account</button>
+        </form>
+        <ul id="accounts" class="list" data-testid="accounts"></ul>
+      </div>
+
+      <div class="card">
+        <h2>New transaction</h2>
+        <form id="tx-form">
+          <label>Type
+            <select id="tx-type">
+              <option value="DEPOSIT">Deposit</option>
+              <option value="PAYMENT">Payment</option>
+              <option value="WITHDRAWAL">Withdrawal</option>
+            </select>
+          </label>
+          <label>Amount <input id="tx-amount" type="number" min="0.01" step="0.01" required></label>
+          <label>Merchant <input id="tx-merchant" maxlength="100"></label>
+          <label>Country <input id="tx-country" value="CA" maxlength="2" required></label>
+          <button type="submit" id="tx-submit">Send</button>
+        </form>
+        <div id="tx-result" data-testid="tx-result" hidden></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>History</h2>
+      <table>
+        <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Country</th><th>Status</th><th>Score</th></tr></thead>
+        <tbody id="tx-history" data-testid="tx-history"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Analyst view -->
+  <section id="analyst-view" class="card" hidden>
+    <h2>Fraud alerts</h2>
+    <label>Status
+      <select id="alert-filter">
+        <option value="OPEN">Open</option>
+        <option value="CONFIRMED_FRAUD">Confirmed fraud</option>
+        <option value="FALSE_POSITIVE">False positive</option>
+        <option value="">All</option>
+      </select>
+    </label>
+    <table>
+      <thead><tr><th>#</th><th>Account</th><th>Amount</th><th>Country</th><th>Score</th><th>Reasons</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="alerts" data-testid="alerts"></tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>

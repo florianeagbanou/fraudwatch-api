@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: fraudwatch-api
+  # Default database: H2 in memory. Nothing to install, data is lost on restart.
+  # Use the "postgres" profile (docker compose) for a real database.
+  datasource:
+    url: jdbc:h2:mem:fraudwatch;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    # The schema is owned by Flyway migrations (src/main/resources/db/migration).
+    # Hibernate must never create or change tables by itself.
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  flyway:
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+fraudwatch:
+  jwt:
+    # Override in production with the JWT_SECRET environment variable (at least 32 characters).
+    secret: ${JWT_SECRET:dev-only-secret-change-me-please-32chars-min}
+    ttl: PT1H
+  security:
+    max-failed-logins: 5
+    lockout-duration: PT15M
+  demo-data:
+    enabled: true
+  rules:
+    large-amount-threshold: 10000
+    unusual-amount-multiplier: 5
+    unusual-amount-min-history: 3
+    velocity-max-transactions: 5
+    velocity-window: PT10M
+    impossible-travel-window: PT2H
+    night-start-hour: 0
+    night-end-hour: 5
+    zone: America/Toronto
+    flag-threshold: 40
+    block-threshold: 70
